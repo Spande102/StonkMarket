@@ -1,0 +1,340 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0e14;
+            color: #e6e6e6;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4cff9e;
+        }
+        
+        .logo span {
+            color: #fff;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 8px 15px;
+            padding-right: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #4cff9e;
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 20px;
+        }
+        
+        nav ul li a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: #4cff9e;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #222;
+        }
+        
+        .stock-title {
+            display: flex;
+            align-items: baseline;
+        }
+        
+        .stock-title h1 {
+            font-size: 2.5rem;
+            margin-right: 10px;
+        }
+        
+        .stock-ticker {
+            font-size: 1.2rem;
+            color: #999;
+        }
+        
+        .stock-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .current-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .price-change {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .up {
+            color: #4cff9e;
+        }
+        
+        .down {
+            color: #ff4c4c;
+        }
+        
+        .stock-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+        
+        .chart-container {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #222;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .time-btn {
+            padding: 5px 10px;
+            border: 1px solid #333;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #999;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .time-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        .time-btn.active {
+            background-color: rgba(76, 255, 158, 0.2);
+            color: #4cff9e;
+            border-color: #4cff9e;
+        }
+        
+        .chart {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .stats-box {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #222;
+        }
+        
+        .stats-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #ddd;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            padding: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .watchlist-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: rgba(76, 255, 158, 0.1);
+            color: #4cff9e;
+            border: 1px solid #4cff9e;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .watchlist-btn:hover {
+            background-color: rgba(76, 255, 158, 0.2);
+        }
+        
+        .about-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid #222;
+        }
+        
+        .about-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .about-text {
+            color: #bbb;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #777;
+            border-top: 1px solid #222;
+        }
+        
+        /* New styles for Stock logo */
+        .stock-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+        
+        .company-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 960px) {
+            .stock-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stock-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stock-price {
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            nav ul li {
+                margin-left: 10px;
+            }
+            
+            .stock-logo {
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
+            }
+        }

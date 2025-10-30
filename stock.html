@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info - StonkMarket</title>
+    <link rel="stylesheet" href="styles/stock.css">
+    
+    <script src="https://unpkg.com/lightweight-charts@4.2.1/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">Stonk<span>Market</span></div>
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search stocks...">
+            <button class="search-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="https://www.reddit.com/r/wallstreetbets">WallStreetBets</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="stock-header">
+            <div class="stock-title">
+                <div class="company-info">
+                    
+                    <img class="stock-logo" src="" alt="Company Logo">
+                    
+                    <h1 id="companyName">Loading...</h1>
+                </div>
+                <span class="stock-ticker">NASDAQ: AAPL</span>
+            </div>
+            <div class="stock-price">
+                <div class="current-price">$0.00</div>
+                <div class="price-change up">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                    +$0.00 (0.00%)
+                </div>
+            </div>
+        </div>
+        
+        <div class="stock-grid">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Loading Price Chart...</div>
+                    <div class="chart-controls">
+                        <button class="time-btn active">1D</button> 
+                        <button class="time-btn">1W</button>
+                        <button class="time-btn">1M</button>
+                        <button class="time-btn">3M</button>
+                        <button class="time-btn">6M</button>
+                        <button class="time-btn">1Y</button>
+                        <button class="time-btn">5Y</button>
+                        <button class="time-btn">MAX</button>
+                    </div>
+                </div>
+                
+                <div class="chart" id="price-chart"></div>
+
+            </div>
+            
+            <div class="stats-container">
+                <div class="stats-box">
+                    <div class="stats-title">Market Stats</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Market Cap</div>
+                            <div class="stat-value" data-stat="marketCap">$0.00</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">P/E Ratio</div>
+                            <div class="stat-value">32.14</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dividend Yield</div>
+                            <div class="stat-value">0.54%</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">52 Week High</div>
+                            <div class="stat-value">$196.42</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">52 Week Low</div>
+                            <div class="stat-value">$158.36</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Volume</div>
+                            <div class="stat-value">57.2M</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-box">
+                    <div class="stats-title">Key Metrics</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Day High</div>
+                            <div class="stat-value" data-stat="high">$0.00</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Day Low</div>
+                            <div class="stat-value" data-stat="low">$0.00</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Open</div>
+                            <div class="stat-value" data-stat="open">$0.00</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Prev Close</div>
+                            <div class="stat-value" data-stat="prev">$0.00</div>
+                          </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Next Earnings</div>
+                            <div class="stat-value">Apr 27, 2025</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="watchlist-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Add to Watchlist
+                </button>
+            </div>
+        </div>
+        
+        <div class="about-container">
+            <div class="about-title">About <span id="aboutName">...</span></div>
+            <div class="about-text">
+                <span id="Desc">...</span>‎designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allow customers to discover and download applications and digital content, such as books, music, video, games, and podcasts.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 StonkMarket. All market data provided is for informational purposes only and delayed by at least 15 minutes.
+    </footer>
+
+
+    <script>
+        const API_KEY = []; // <-- Replace with your actual API key
+      
+        // Get the ticker from the URL
+        const stock_params = new URLSearchParams(window.location.search);
+        const stock_ticker = stock_params.get('query')?.toUpperCase() || 'AAPL';
+        
+        //  CHARTING LOGIC
+        
+        const chartContainer = document.getElementById('price-chart');
+        
+        // This line creates the chart object
+        const chart = LightweightCharts.createChart(chartContainer, {
+            width: chartContainer.clientWidth,
+            height: 400, // Match .chart CSS height
+            layout: {
+                backgroundColor: '#0a0e14', // Your body background
+                textColor: '#ccc',
+            },
+            grid: {
+                vertLines: { color: '#333' },
+                horzLines: { color: '#333' },
+            },
+            rightPriceScale: {
+                borderColor: '#333',
+            },
+            timeScale: {
+                borderColor: '#333',
+                timeVisible: true, 
+                secondsVisible: false,
+            },
+        });
+
+        // This line, which was failing, adds the series to the chart
+        const areaSeries = chart.addAreaSeries({
+            lineColor: '#4cff9e',
+            topColor: 'rgba(76, 255, 158, 0.3)',
+            bottomColor: 'rgba(76, 255, 158, 0)',
+            lineWidth: 2,
+        });
+
+        // Handle chart resizing
+        new ResizeObserver(entries => {
+            if (entries[0] && entries[0].contentRect) {
+                chart.resize(entries[0].contentRect.width, 400);
+            }
+        }).observe(chartContainer);
+
+async function loadChartData(symbol, timeframe) {
+    let resolution;
+    let from;
+    const to = Math.floor(Date.now() / 1000);
+
+    switch (timeframe) {
+        case '1D':
+            resolution = 'D'; // 🔹 Use Daily instead of intraday
+            from = to - (60 * 60 * 24 * 5);
+            break;
+        case '1W':
+            resolution = 'D';
+            from = to - (60 * 60 * 24 * 7);
+            break;
+        case '1M':
+            resolution = 'D';
+            from = to - (60 * 60 * 24 * 30);
+            break;
+        case '3M':
+            resolution = 'D';
+            from = to - (60 * 60 * 24 * 90);
+            break;
+        case '6M':
+            resolution = 'D';
+            from = to - (60 * 60 * 24 * 180);
+            break;
+        case '1Y':
+            resolution = 'W'; // Weekly intervals
+            from = to - (60 * 60 * 24 * 365);
+            break;
+        case '5Y':
+            resolution = 'M'; // Monthly intervals
+            from = to - (60 * 60 * 24 * 365 * 5);
+            break;
+            case 'MAX':
+            resolution = 'M';
+            from = 0; // From the beginning
+            break;
+        default:
+            resolution = 'D';
+            from = to - (60 * 60 * 24 * 30);
+    }
+
+    try {
+        const res = await fetch(`https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=${resolution}&from=${from}&to=${to}&token=${API_KEY}`);
+        const data = await res.json();
+
+        if (data.s !== 'ok' || !data.c) {
+            console.error('Failed to fetch chart data:', data);
+            areaSeries.setData([]);
+            return;
+        }
+
+        const formattedData = data.c.map((price, index) => ({
+            time: data.t[index],
+            value: price,
+        }));
+
+        areaSeries.setData(formattedData);
+        chart.timeScale().fitContent();
+    } catch (err) {
+        console.error('Failed to fetch chart data:', err);
+    }
+}
+        
+        const chartControls = document.querySelector('.chart-controls');
+        chartControls.addEventListener('click', (e) => {
+            if (e.target.classList.contains('time-btn')) {
+                chartControls.querySelectorAll('.time-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                e.target.classList.add('active');
+                
+                const timeframe = e.target.textContent;
+                loadChartData(stock_ticker, timeframe);
+            }
+        });
+        
+        // profile & quote logic
+
+        async function loadProfile(symbol) {
+            try {
+                const res = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
+                const data = await res.json();
+                if (data.name) {
+                    document.title = `${data.name} | StonkMarket`;
+                    document.getElementById('companyName').textContent = data.name;
+                    document.querySelector('.stock-ticker').textContent = `${data.exchange}: ${data.ticker}`;
+                    if (data.logo) {
+                        document.querySelector('.stock-logo').src = data.logo;
+                    }
+                    document.querySelector('.chart-title').textContent = `${data.name} Price Chart`;
+                    document.getElementById('aboutName').textContent = data.name;
+                    document.getElementById("Desc").textContent = `Industry: ${data.finnhubIndustry}`;
+                    const marketCapInBillions = (data.marketCapitalization / 1000).toFixed(2);
+                    document.querySelector('.stat-value[data-stat="marketCap"]').textContent = `$${marketCapInBillions}B`;
+                } else {
+                    document.getElementById('companyName').textContent = `${symbol} (No profile data)`;
+                }
+            } catch (err) {
+                console.error('Failed to fetch profile:', err);
+                document.getElementById('companyName').textContent = `${symbol} (Error)`;
+            }
+        }
+      
+        async function loadQuote(symbol) {
+          try {
+            const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`);
+            const data = await res.json();
+            if (data.c === 0 && data.pc === 0) {
+                console.error('No quote data returned for symbol:', symbol);
+                document.querySelector('.current-price').textContent = `N/A`;
+                document.querySelector('.price-change').textContent = `Invalid Symbol`;
+                return; 
+            }
+            const current = data.c;
+            const previous = data.pc;
+            const change = current - previous;
+            const percent = (previous === 0) ? 0 : ((change / previous) * 100).toFixed(2);
+            document.querySelector('.current-price').textContent = `$${current.toFixed(2)}`;
+            const priceChange = document.querySelector('.price-change');
+            
+            priceChange.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="${change >= 0 ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline>
+              </svg>
+              ${change >= 0 ? '+' : ''}$${change.toFixed(2)} (${percent}%)
+            `;
+            
+            priceChange.className = `price-change ${change >= 0 ? 'up' : 'down'}`;
+            document.querySelector('.stat-value[data-stat="high"]').textContent = `$${data.h.toFixed(2)}`;
+            document.querySelector('.stat-value[data-stat="low"]').textContent = `$${data.l.toFixed(2)}`;
+            document.querySelector('.stat-value[data-stat="open"]').textContent = `$${data.o.toFixed(2)}`;
+            document.querySelector('.stat-value[data-stat="prev"]').textContent = `$${data.pc.toFixed(2)}`;
+          } catch (err) {
+            console.error('Failed to fetch quote:', err);
+          }
+        }
+        
+        // run functions
+        
+        loadProfile(stock_ticker);
+        loadQuote(stock_ticker);
+        
+        // Load the 1D chart by default
+        loadChartData(stock_ticker, '1D');
+
+        // Make sure the '1D' button is set to active 
+        // (This code assumes 1D is the first button)
+        document.querySelector('.chart-controls .time-btn.active').classList.remove('active');
+        document.querySelector('.chart-controls .time-btn:nth-child(1)').classList.add('active'); 
+
+        // Refresh *only* the price quote every minute
+        setInterval(() => {
+            console.log('Refreshing quote for:', stock_ticker);
+            loadQuote(stock_ticker);
+        }, 60000);
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StonkMarket - Stock Details</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">Stonk<span>Market</span></div>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="https://www.reddit.com/r/wallstreetbets" target="_blank">WallStreetBets</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="stock-container">
+            <h1 class="stock-title" id="stock-name">Loading...</h1>
+            <p class="stock-symbol" id="stock-symbol"></p>
+            
+            <div class="chart-section">
+                <h2 class="chart-title">Loading chart...</h2>
+                <div class="chart-controls">
+                    <span style="color:#ccc; font-size:0.9rem;">(Daily Chart)</span>
+                </div>
+                <div id="price-chart" class="chart"></div>
+            </div>
+
+            <div class="stock-stats">
+                <div class="stat-item"><span>Current Price:</span> <span id="current-price">—</span></div>
+                <div class="stat-item"><span>Open:</span> <span id="open-price">—</span></div>
+                <div class="stat-item"><span>High:</span> <span id="high-price">—</span></div>
+                <div class="stat-item"><span>Low:</span> <span id="low-price">—</span></div>
+                <div class="stat-item"><span>Previous Close:</span> <span id="prev-close">—</span></div>
+            </div>
+
+            <button id="addWatchlistBtn" class="watchlist-btn">Add to Watchlist</button>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 StonkMarket. All market data provided is for informational purposes only.
+    </footer>
+
+    <script>
+        // Finnhub API key
+        const API_KEY = []; // <-- Replace with your actual API key;
+
+        // --- Parse query (e.g., ?query=AAPL) ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const stock_ticker = urlParams.get('query')?.toUpperCase() || 'AAPL';
+
+        document.getElementById('stock-symbol').textContent = stock_ticker;
+
+        // DAILY CHART ONLY
+        const chartContainer = document.getElementById('price-chart');
+        const chart = LightweightCharts.createChart(chartContainer, {
+            width: chartContainer.clientWidth,
+            height: 400,
+            layout: { backgroundColor: '#0a0e14', textColor: '#ccc' },
+            grid: {
+                vertLines: { color: '#333' },
+                horzLines: { color: '#333' },
+            },
+            rightPriceScale: { borderColor: '#333' },
+            timeScale: { borderColor: '#333', timeVisible: true, secondsVisible: false },
+        });
+
+        const areaSeries = chart.addAreaSeries({
+            lineColor: '#4cff9e',
+            topColor: 'rgba(76, 255, 158, 0.3)',
+            bottomColor: 'rgba(76, 255, 158, 0)',
+            lineWidth: 2,
+        });
+
+        new ResizeObserver(entries => {
+            if (entries[0]?.contentRect) {
+                chart.resize(entries[0].contentRect.width, 400);
+            }
+        }).observe(chartContainer);
+
+        async function loadDailyChart(symbol) {
+            const to = Math.floor(Date.now() / 1000);
+            const from = to - (60 * 60 * 24 * 180); // 6 months
+
+            try {
+                const res = await fetch(
+                    `https://finnhub.io/api/v1/stock/candle?symbol=${symbol}&resolution=D&from=${from}&to=${to}&token=${API_KEY}`
+                );
+                const data = await res.json();
+
+                if (data.s !== 'ok' || !data.c) {
+                    console.error('Failed to fetch chart data:', data);
+                    areaSeries.setData([]);
+                    document.querySelector('.chart-title').textContent = `${symbol} - No chart data available`;
+                    return;
+                }
+
+                const formattedData = data.c.map((price, i) => ({
+                    time: data.t[i],
+                    value: price,
+                }));
+
+                areaSeries.setData(formattedData);
+                chart.timeScale().fitContent();
+                document.querySelector('.chart-title').textContent = `${symbol} - Daily Chart`;
+            } catch (err) {
+                console.error('Failed to fetch chart data:', err);
+            }
+        }
+
+        //  STOCK QUOTE INFO 
+        async function loadQuote(symbol) {
+            try {
+                const res = await fetch(
+                    `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${API_KEY}`
+                );
+                const data = await res.json();
+
+                if (data.c) {
+                    document.getElementById('current-price').textContent = `$${data.c.toFixed(2)}`;
+                    document.getElementById('open-price').textContent = `$${data.o.toFixed(2)}`;
+                    document.getElementById('high-price').textContent = `$${data.h.toFixed(2)}`;
+                    document.getElementById('low-price').textContent = `$${data.l.toFixed(2)}`;
+                    document.getElementById('prev-close').textContent = `$${data.pc.toFixed(2)}`;
+                }
+            } catch (err) {
+                console.error('Failed to load quote:', err);
+            }
+        }
+
+        // COMPANY NAME
+        async function loadProfile(symbol) {
+            try {
+                const res = await fetch(
+                    `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${API_KEY}`
+                );
+                const data = await res.json();
+                document.getElementById('stock-name').textContent = data.name || symbol;
+            } catch (err) {
+                console.error('Failed to fetch company profile:', err);
+                document.getElementById('stock-name').textContent = symbol;
+            }
+        }
+
+        // WATCHLIST BUTTON 
+        const watchlistBtn = document.getElementById('addWatchlistBtn');
+        watchlistBtn.addEventListener('click', () => {
+            let watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+            if (!watchlist.includes(stock_ticker)) {
+                watchlist.push(stock_ticker);
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                alert(`${stock_ticker} added to watchlist!`);
+            } else {
+                alert(`${stock_ticker} is already in your watchlist.`);
+            }
+        });
+
+        //  INITIAL LOAD
+        loadDailyChart(stock_ticker);
+        loadQuote(stock_ticker);
+        loadProfile(stock_ticker);
+    </script>
+</body>
+</html>

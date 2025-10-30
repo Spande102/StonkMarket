@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StonkMarket - Meme Stock Data</title>
+    <link rel="stylesheet" href="styles/global.css">
+</head>
+<body>
+    <div class="bg-wrapper">
+        <img src="home.png" alt="StonkMarket home bg" class="bg-img">
+    </div>
+    
+    <header>
+        <div class="logo">Stonk<span>Market</span></div>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="https://www.reddit.com/r/wallstreetbets">WallStreetBets</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="search-container">
+            <h1>Find Your Next <span class="highlight">Investment</span></h1>
+            <p class="tagline">Meme Stock Mastery: Real-time data, charts, and analytics to track the next big squeeze.</p>
+            
+            <div class="search-box">
+                <input id="searchInput" type="text" class="search-input" 
+                placeholder="Search by company name or ticker symbol (e.g., AAPL, TSLA)">
+                <button class="search-btn" id="searchBtn">
+                    <!-- SVG icon -->
+                </button>
+            </div>
+            
+            <div class="trending">
+                <p class="trending-title">TRENDING STOCKS</p>
+                <div class="trending-stocks">
+                    <div class="stock-chip">GME <span class="up">+1.2%</span></div>
+                    <div class="stock-chip">AMC <span class="up">+0.8%</span></div>
+                    <div class="stock-chip">TSLA <span class="down">-0.3%</span></div>
+                    <div class="stock-chip">SPY <span class="up">+2.1%</span></div>
+                    <div class="stock-chip">CHWY <span class="up">+3.4%</span></div>
+                    <div class="stock-chip">HOOD <span class="up">+0.5%</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <footer>
+        &copy; 2025 StonkMarket. All market data provided is for informational purposes only.
+    </footer>
+
+<script>
+        // Add Finnhub API Key here
+        const API_KEY = []; // <-- Replace with your actual API key
+
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.getElementById('searchInput');
+
+        // This is the new, asynchronous search function
+        async function performSearch() {
+            // Get the query, e.g., "GME" or "AAPL"
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                return; // Do nothing if the search box is empty
+            }
+
+            // Disable the button to prevent multiple clicks
+            searchBtn.disabled = true;
+            searchInput.disabled = true;
+
+            try {
+                // Call Finnhub's search endpoint to find the best match
+                const res = await fetch(`https://finnhub.io/api/v1/search?q=${query}&token=${API_KEY}`);
+                const data = await res.json();
+
+                // Check if we got any results
+                if (data.result && data.result.length > 0) {
+                    
+                    // Get the *best* match (usually the first one)
+                    let bestMatch = data.result[0];
+                    let ticker = bestMatch.symbol;
+                    
+                    // Redirect to the stock page with the *correct ticker*
+                    console.log(`Search for "${query}" resolved to ticker: ${ticker}`);
+                    window.location.href = `stock.html?query=${ticker}`;
+
+                } else {
+                    // Handle no results found
+                    alert(`No stock found for "${query}". Please try another search.`);
+                }
+
+            } catch (err) {
+                console.error('Search failed:', err);
+                alert('Search service is currently unavailable. Please try again later.');
+            }
+
+            // Re-enable the button in case the redirect fails or is slow
+            searchBtn.disabled = false;
+            searchInput.disabled = false;
+        }
+
+        //  Add listener for the button click
+        searchBtn.addEventListener('click', performSearch);
+
+        //  Add listener for pressing "Enter" in the search box
+        searchInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+
+</body>
+</html>

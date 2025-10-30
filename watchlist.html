@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>StonkMarket — Top 100 Meme Stocks (Live)</title>
+
+<link rel="stylesheet" href="styles/watchlist.css">
+<link rel="stylesheet" href="styles/global.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Stonk<span>Market</span></div>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="watchlist.html">Watchlist</a></li>
+                <li><a href="https://www.reddit.com/r/wallstreetbets">WallStreetBets</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+<main>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <div>
+      <h1>Top 100 Most Popular Meme Stocks (Live)</h1>
+      <p class="lead">Live prices fetched from Finnhub. The list is hardcoded — swap with dynamic source later </p>
+    </div>
+    <div style="min-width:220px;text-align:right">
+      <div class="small-muted">Source: Fear & Greed — Top 100 (mock list)</div>
+      <div style="margin-top:8px;color:var(--muted);font-size:0.95rem">Last update: <strong id="lastUpdated">—</strong></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div>
+      <button class="btn" id="loadLive">Load Live Data</button>
+      <button class="btn" id="pauseBtn">Pause</button>
+      <button class="btn" id="sortChange">Sort: % Change</button>
+      <button class="btn" id="sortTicker">Sort: Ticker</button>
+    </div>
+    <div class="small-muted">Showing <strong id="showCount">100</strong> tickers</div>
+  </div>
+
+  <div class="table" id="tableWrapper" role="table" aria-label="Meme stocks watchlist">
+    <div class="thead" role="row">
+      <div class="col-1">Ticker</div>
+      <div class="col-2">Name</div>
+      <div class="col-3">Price</div>
+      <div class="col-4">Change</div>
+    </div>
+
+    <div id="listRoot" aria-live="polite">
+      <!-- rows will be injected here -->
+    </div>
+  </div>
+</main>
+
+<footer>&copy; 2025 StonkMarket — Live demo using Finnhub.
+All market data provided is for informational purposes only.
+</footer>
+
+<script>
+
+const FINNHUB_API_KEY = []; // <-- REPLACE WITH YOUR KEY
+
+// Top 100 meme tickers (sample list). Modify as needed.
+const top100 = [
+  "BYND","TSLA","SPY","INTC","GLD","GME","AAPL","NVDA","AMD","AMZN","AMC","META","MSFT","NFLX","PLTR",
+  "HOOD","BB","QRVO","SNAP","SOFI","CVNA","WMT","JPM","IBM","ASML","ROKU","BABA","UBER","LYFT","QQQ",
+  "TSM","SQ","PYPL","DOCU","CRWD","OKTA","MELI","NIO","LI","RCL","CCL","DAL","UAL","NKE","LULU","SBUX",
+  "TWTR","SHOP","ETSY","Z","SPCE","MS","GS","BAC","C","UBS","TCEHY","NVAX","EXPR","RH","F","GM","GMAB",
+  "GILD","T","VZ","ORCL","ADBE","CRM","NOW","WDAY","INTU","ADP","A","V","MA","PYPL","FTNT","PANW","ZS",
+  "ZM","DDOG","OKTA","CRWD","DT","UBER","LYFT","MRNA","BNTX","BTC-USD","ETH-USD","SPCE","RDY","MARA","RIOT",
+  "NEM","BTG","MSTR","COIN","SQ","ETN","XOM","CVX","BP","TOT","ENB","EOG","COP","APA","PXD","SLB","HAL"
+];
+
+// Utility: chunk an array into groups of size n
+function chunk(arr, n){
+  const out=[];
+  for(let i=0;i<arr.length;i+=n) out.push(arr.slice(i,i+n));
+  return out;
+}
+
+// DOM root
+const listRoot = document.getElementById('listRoot');
+const lastUpdatedEl = document.getElementById('lastUpdated');
+const showCountEl = document.getElementById('showCount');
+showCountEl.textContent = top100.length;
+
+// keep a map of ticker => DOM row for updates
+const rowMap = new Map();
+
+// Build the static rows first (skeleton UI)
+function buildRows(tickers){
+  listRoot.innerHTML = '';
+  tickers.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.id = `row-${t}`;
+    row.innerHTML = `
+      <div class="col-1 ticker-block">
+        <div class="tick-badge">${t}</div>
+      </div>
+      <div class="col-2 meta">
+        <div class="name" id="name-${t}">Loading...</div>
+        <div class="sub small-muted" id="sub-${t}">${t}</div>
+      </div>
+      <div class="col-3">
+        <div class="price" id="price-${t}">—</div>
+      </div>
+      <div class="col-4">
+        <div class="chg small-muted" id="chg-${t}">—</div>
+      </div>
+      <div class="col-5">
+        <div class="spark" id="spark-${t}">
+          <!-- inline svg placeholder -->
+          <svg viewBox="0 0 120 36" preserveAspectRatio="none" width="120" height="36"></svg>
+        </div>
+      </div>
+    `;
+    listRoot.appendChild(row);
+    rowMap.set(t, row);
+  });
+}
+buildRows(top100);
+
+// Helper: safe fetch
+async function safeFetch(url){
+  try {
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return await res.json();
+  } catch(err) {
+    console.error('fetch error', url, err);
+    return null;
+  }
+}
+
+/*
+  Finnhub endpoints:
+  - Quote: https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={API_KEY}
+  - Company profile: https://finnhub.io/api/v1/stock/profile2?symbol={SYMBOL}&token={API_KEY}
+  - Candles: https://finnhub.io/api/v1/stock/candle?symbol={SYMBOL}&resolution=D&from={FROM}&to={TO}&token={API_KEY}
+*/
+
+// Fetch one ticker (quote + profile + candles)
+async function fetchTickerData(ticker){
+  const base = 'https://finnhub.io/api/v1';
+  const qUrl = `${base}/quote?symbol=${encodeURIComponent(ticker)}&token=${FINNHUB_API_KEY}`;
+  const pUrl = `${base}/stock/profile2?symbol=${encodeURIComponent(ticker)}&token=${FINNHUB_API_KEY}`;
+
+  // candles for last ~30 days (resolution daily)
+  const to = Math.floor(Date.now() / 1000);
+  const from = to - (60 * 60 * 24 * 45); // 45 days to be safe
+  const cUrl = `${base}/stock/candle?symbol=${encodeURIComponent(ticker)}&resolution=D&from=${from}&to=${to}&token=${FINNHUB_API_KEY}`;
+
+  // request them in parallel
+  const [q, p, c] = await Promise.all([
+    safeFetch(qUrl),
+    safeFetch(pUrl),
+    safeFetch(cUrl)
+  ]);
+
+  return { quote: q, profile: p, candles: c };
+}
+
+// Create sparkline SVG from candles array (close prices)
+function createSparkSVG(closes, width = 120, height = 36){
+  if(!closes || closes.length === 0) {
+    return `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none"></svg>`;
+  }
+  const vals = closes.slice(-30); // last 30 points
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = max - min || 1;
+  const step = width / (vals.length - 1);
+  let path = '';
+  vals.forEach((v,i) => {
+    const x = (i * step).toFixed(2);
+    const y = (height - ((v - min) / range) * height).toFixed(2);
+    path += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+  });
+
+  const areaPath = path + ` L ${width} ${height} L 0 ${height} Z`;
+  // return an inline svg string
+  return `
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g${Math.random().toString(36).slice(2,7)}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()}" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="${getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="${areaPath}" fill="url(#g${Math.random().toString(36).slice(2,7)})" opacity="0.6"/>
+      <path d="${path}" fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `;
+}
+
+// Update one row's UI with data
+function updateRowUI(ticker, data){
+  const quote = data?.quote;
+  const profile = data?.profile;
+  const candles = data?.candles;
+
+  const priceEl = document.getElementById(`price-${ticker}`);
+  const chgEl = document.getElementById(`chg-${ticker}`);
+  const nameEl = document.getElementById(`name-${ticker}`);
+  const sparkEl = document.getElementById(`spark-${ticker}`);
+
+  if(profile && profile.name) nameEl.textContent = profile.name;
+  if(!quote) {
+    if(priceEl) priceEl.textContent = 'N/A';
+    if(chgEl) chgEl.textContent = 'N/A';
+  } else {
+    const current = quote.c;
+    const prev = quote.pc || quote.c;
+    const diff = (current - prev);
+    const pct = prev ? (diff / prev * 100) : 0;
+    if(priceEl) priceEl.textContent = typeof current === 'number' ? `$${current.toFixed(2)}` : 'N/A';
+    if(chgEl) {
+      chgEl.textContent = `${diff>=0?'+':''}${diff.toFixed(2)} (${pct.toFixed(2)}%)`;
+      chgEl.classList.remove('up','down');
+      chgEl.classList.add(diff>=0 ? 'up' : 'down');
+    }
+  }
+
+  if(candles && candles.s === 'ok' && Array.isArray(candles.c)){
+    // candles.c is closes
+    if(sparkEl) sparkEl.innerHTML = createSparkSVG(candles.c, 120, 36);
+  } else {
+    // fallback: keep existing spark or clear
+    // no-op
+  }
+}
+
+/* Rate-limited batch loader
+   - chunks tickers into groups (batchSize), then for each group call fetches in parallel,
+     then wait batchDelay ms before next group.
+*/
+async function loadAllLive(tickers, { batchSize = 6, batchDelay = 1200 } = {}){
+  if(!FINNHUB_API_KEY || FINNHUB_API_KEY === 'YOUR_FINNHUB_KEY_HERE'){
+    alert('Please replace FINNHUB_API_KEY in the file with your Finnhub API key before using live mode.');
+    return;
+  }
+  const chunks = chunk(tickers, batchSize);
+  for(let i=0;i<chunks.length;i++){
+    const batch = chunks[i];
+    // perform parallel fetches for this batch
+    const promises = batch.map(t => {
+      return fetchTickerData(t).then(data => ({ t, data }));
+    });
+    const results = await Promise.all(promises.map(p => p.catch(e => ({ error:e }))));
+    results.forEach(res => {
+      if(res && res.t) {
+        updateRowUI(res.t, res.data);
+      }
+    });
+    lastUpdatedEl.textContent = new Date().toLocaleString();
+    // small pause between batches
+    if(i < chunks.length - 1) await new Promise(r => setTimeout(r, batchDelay));
+  }
+}
+
+/* Controls & interactions */
+let autoRefreshTimer = null;
+let paused = false;
+
+document.getElementById('loadLive').addEventListener('click', async ()=>{
+  document.getElementById('loadLive').disabled = true;
+  await loadAllLive(top100, { batchSize: 6, batchDelay: 1200 });
+  // start auto refresh every 60 seconds (but still batched)
+  if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(async ()=>{
+    if(!paused) await loadAllLive(top100, { batchSize: 6, batchDelay: 1200 });
+  }, 60_000);
+});
+
+document.getElementById('refreshAll').addEventListener('click', ()=> {
+  if(autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+  loadAllLive(top100, { batchSize: 6, batchDelay: 1200 });
+});
+
+document.getElementById('pauseBtn').addEventListener('click', (e)=>{
+  paused = !paused;
+  e.target.textContent = paused ? 'Resume' : 'Pause';
+});
+
+document.getElementById('sortChange').addEventListener('click', ()=>{
+  // best-effort sorting by the numeric value inside the price DOM
+  const arr = [...top100];
+  arr.sort((a,b)=>{
+    const pa = (document.getElementById(`price-${a}`)?.textContent || '').replace(/[^0-9.-]/g,'');
+    const pb = (document.getElementById(`price-${b}`)?.textContent || '').replace(/[^0-9.-]/g,'');
+    return (parseFloat(pb || 0) - parseFloat(pa || 0));
+  });
+  buildRows(arr);
+  // after rebuilding rows, re-attach existing rendered content by invoking loadAllLive on visible only
+  // but better: rebuild rows and re-run load for visible list (quick approach: run load for displayed tickers)
+  const visible = arr.map(x=>x);
+  populateVisible(visible);
+});
+
+document.getElementById('sortTicker').addEventListener('click', ()=>{
+  const arr = [...top100].sort();
+  buildRows(arr);
+  populateVisible(arr);
+});
+
+function populateVisible(list){
+  // keep UI skeleton and then update currently visible ones from cached UI elements (or refetch quickly)
+  // for simplicity, we will call loadAllLive only for the visible subset:
+  loadAllLive(list, { batchSize: 8, batchDelay: 800 });
+}
+
+/* Search filter */
+const globalSearch = document.getElementById('globalSearch');
+globalSearch.addEventListener('keyup', (e)=>{
+  if(e.key !== 'Enter') return;
+  const q = globalSearch.value.trim().toLowerCase();
+  if(!q) { buildRows(top100); populateVisible(top100); showCountEl.textContent = top100.length; return; }
+  const filtered = top100.filter(t => t.toLowerCase().includes(q) || (document.getElementById(`name-${t}`)?.textContent || '').toLowerCase().includes(q));
+  if(filtered.length === 0){
+    alert('No tickers found in the list for: ' + q);
+  }
+  buildRows(filtered);
+  populateVisible(filtered);
+  showCountEl.textContent = filtered.length;
+});
+
+/* Initialize: build skeleton and optionally start demo fetch for small subset */
+(function init(){
+  // set placeholder names equal to ticker until profile loads
+  top100.forEach(t => {
+    const nameEl = document.getElementById(`name-${t}`);
+    if(nameEl) nameEl.textContent = t;
+  });
+  // optionally auto-load first small batch so page looks populated quickly
+  loadAllLive(top100.slice(0, 12), { batchSize: 6, batchDelay: 900 });
+})();
+</script>
+</body>
+</html>
