@@ -207,7 +207,7 @@ async function loadChartData(symbol, timeframe) {
 
     switch (timeframe) {
         case '1D':
-            resolution = 'D'; // 🔹 Use Daily instead of intraday
+            resolution = 'D'; // Use Daily
             from = to - (60 * 60 * 24 * 5);
             break;
         case '1W':
