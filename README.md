@@ -1,6 +1,6 @@
 # StonkMarket
 
-A lightweight web application for tracking meme stock data.
+A lightweight HTML/JS web application for tracking meme stock data.
 
 Features include:
   - Search by company name (e.g., "GameStop") or ticker symbol (e.g., "GME")
